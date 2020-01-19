@@ -60,15 +60,15 @@ pipenv run coverage report
 You should see similar output to the following:
 
 ```txt
-=============================================== test session starts ===============================================
+======================= test session starts =========================
 platform linux -- Python 3.7.6, pytest-5.3.3, py-1.8.1, pluggy-0.13.1
 rootdir: [redacted]/homework, inifile: setup.cfg, testpaths: tests
 collected 3 items                                                                                                 
 
-tests/test_dynamic.py ..                                                                                    [ 66%]
-tests/test_factory.py .                                                                                     [100%]
+tests/test_dynamic.py ..                                       [ 66%]
+tests/test_factory.py .                                        [100%]
 
-=============================================== 3 passed in 40.11s ================================================
+======================= 3 passed in 40.11s ==========================
 ```
 
 ```txt

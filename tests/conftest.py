@@ -7,7 +7,7 @@ def app():
     app = create_app({
         'TESTING': True,
         'SECRET_KEY': 'testing',
-        'STARTUP_COALESCING_SECONDS': 13,
+        'STARTUP_COALESCING_SECONDS': 5,
     })
 
     yield app
