@@ -8,10 +8,14 @@ bp = Blueprint('dynamic', __name__)
 
 @bp.route('/')
 def index():
-   return url_for('dynamic.dynamic')
+    return {
+        'link': url_for('dynamic.dynamic')
+    }
 
 # a simple page that returns something dynamic 
 @bp.route('/dynamic') 
-def dynamic(): 
-    return f'{random()}' 
+def dynamic():
+    return {
+        'dynamic': f'{random()}'
+    }
 
