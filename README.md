@@ -6,7 +6,7 @@ A simple dynamic web application in a CI/CD world.
 
 ### Dependency Installation
 
-The `Flask` Python web framework is used along with tools for testing like `pytest` and `coverage`.
+The `Flask` Python web framework is used along with tools for testing like `pytest` and `coverage` and the `waitress` production-level server.
 
 To install the dependencies and run the app, ensure you have installed on your host:
 
@@ -19,7 +19,7 @@ Run:
 pipenv install
 ```
 
-### Run The App
+### Development Usage
 
 This will start a foreground server process, occupying the shell:
 
@@ -79,5 +79,20 @@ homework/dynamic.py        7      0      0      0   100%
 --------------------------------------------------------
 TOTAL                     28      0      2      0   100%
 
+```
+
+### Production Usage
+
+Run the
+[waitress server](https://docs.pylonsproject.org/projects/waitress/en/stable/arguments.html#arguments):
+
+```bash
+pipenv run waitress-serve --listen '0.0.0.0:8080' --connection-limit=2000 --asyncore-use-poll --call 'homework:create_app'
+```
+
+```txt
+> booting
+> booted
+Serving on http://0.0.0.0:8080
 ```
 

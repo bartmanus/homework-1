@@ -9,6 +9,7 @@ verify_ssl = true
 flask = "*"
 pytest = "*"
 coverage = "*"
+waitress = "*"
 
 [requires]
 python_version = "3.7"
