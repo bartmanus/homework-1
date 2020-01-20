@@ -104,3 +104,18 @@ pipenv run waitress-serve --listen '0.0.0.0:8080' --connection-limit=2000 --asyn
 Serving on http://0.0.0.0:8080
 ```
 
+## Packaging Into a Wheel
+
+Inspired by [@greut](https://medium.com/@greut/building-a-python-package-a-docker-image-using-pipenv-233d8793b6cc).
+A wheel package can be built using:
+
+```bash
+pipenv run python setup.py bdist_wheel
+tree dist/
+```
+
+```txt
+dist/
+└── homework-0.0.1.dev12-py3-none-any.whl
+```
+
