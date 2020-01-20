@@ -6,7 +6,15 @@ A simple dynamic web application in a CI/CD world.
 
 ### Dependency Installation
 
-The `Flask` Python web framework is used along with tools for testing like `pytest` and `coverage` and the `waitress` production-level server.
+Dependencies:
+
+* `Flask` Python web framework
+* the `waitress` production-level server.
+
+Development specific:
+
+* Pythonic wheel packaging tool `pbr`
+* testing tools `pytest` and `coverage`
 
 To install the dependencies and run the app, ensure you have installed on your host:
 
@@ -16,7 +24,7 @@ To install the dependencies and run the app, ensure you have installed on your h
 Run:
 
 ```bash
-pipenv install
+pipenv install --dev
 ```
 
 ### Development Usage
