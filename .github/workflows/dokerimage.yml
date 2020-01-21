@@ -10,16 +10,19 @@ jobs:
     - uses: actions/checkout@v1
     - name: Build the Docker image
       run: |
-        export image_path_name=docker.pkg.github.com/$GITHUB_REPOSITORY
+        export image_path_name=docker.pkg.github.com/$GITHUB_REPOSITORY/homework
+        export branch_slug=$(cut --delimiter / --fields 3- <<< $GITHUB_REF | tr --complement [:alnum:] -)
         export timestamp=$(date +%s)
-        docker build . --file Dockerfile --tag $image_path_name:latest
-        docker image tag $image_path_name:latest $image_path_name:$timestamp
+        docker build . --file Dockerfile --tag $image_path_name:$branch_slug-latest
+        docker image tag $image_path_name:$branch_slug-latest $image_path_name:$timestamp
     - name: Publish the Docker image
       run: |
         export registry_domain=docker.pkg.github.com
-        export image_path_name=$registry_domain/$GITHUB_REPOSITORY
+        export image_path_name=$registry_domain/$GITHUB_REPOSITORY/homework
+        export branch_slug=$(cut --delimiter / --fields 3- <<< $GITHUB_REF | tr --complement [:alnum:] -)
         export timestamp=$(date +%s)
         docker login -u $GITHUB_ACTOR -p ${{ secrets.GITHUB_TOKEN }} $registry_domain
-        docker push $image_path_name:latest
-        docker push $image_path_name:$timestamp
+        for image in $(docker image ls --format '{{.Repository}}:{{.Tag}}' $image_path_name); do
+            docker push $image
+        done
         docker logout $registry_domain
