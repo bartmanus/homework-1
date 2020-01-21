@@ -1,0 +1,17 @@
+name: Docker Image CI
+
+on: [push]
+
+jobs:
+
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v1
+    - name: Build the Docker image
+      run: |
+        export timestamp=$(date +%s)
+        docker build . --file Dockerfile --tag homework:latest
+        docker image tag homework:latest homework:$timestamp
