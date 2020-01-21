@@ -6,7 +6,15 @@ A simple dynamic web application in a CI/CD world.
 
 ### Dependency Installation
 
-The `Flask` Python web framework is used along with tools for testing like `pytest` and `coverage` and the `waitress` production-level server.
+Dependencies:
+
+* `Flask` Python web framework
+* the `waitress` production-level server.
+
+Development specific:
+
+* Pythonic wheel packaging tool `pbr`
+* testing tools `pytest` and `coverage`
 
 To install the dependencies and run the app, ensure you have installed on your host:
 
@@ -16,7 +24,7 @@ To install the dependencies and run the app, ensure you have installed on your h
 Run:
 
 ```bash
-pipenv install
+pipenv install --dev
 ```
 
 ### Development Usage
@@ -95,4 +103,46 @@ pipenv run waitress-serve --listen '0.0.0.0:8080' --connection-limit=2000 --asyn
 > booted
 Serving on http://0.0.0.0:8080
 ```
+
+## Packaging Into a Wheel
+
+Inspired by [@greut](https://medium.com/@greut/building-a-python-package-a-docker-image-using-pipenv-233d8793b6cc).
+A wheel package can be built using:
+
+```bash
+pipenv run python setup.py bdist_wheel
+tree dist/
+```
+
+```txt
+dist/
+└── homework-0.0.1.dev12-py3-none-any.whl
+```
+
+## Containerization
+
+### Building an image
+
+With Docker
+
+```bash
+docker build homework:latest .
+```
+
+With Buildah or Podman
+
+```bash
+podman build -f Dockerfile.buildah -t homework:0.0.1-1 --format docker .
+buildah bud -f Dockerfile.buildah -t homework:0.0.1-1 --format docker .
+```
+
+### Running an image
+
+With Podman:
+
+```bash
+podman run --rm -d -p 8080:8080 homework:0.0.1-1
+```
+
+Test with an ubiquitous HTTP client like mentioned before.
 

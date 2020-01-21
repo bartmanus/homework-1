@@ -4,11 +4,12 @@ url = "https://pypi.org/simple"
 verify_ssl = true
 
 [dev-packages]
+pbr = "*"
+pytest = "*"
+coverage = "*"
 
 [packages]
 flask = "*"
-pytest = "*"
-coverage = "*"
 waitress = "*"
 
 [requires]
