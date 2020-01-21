@@ -119,3 +119,18 @@ dist/
 └── homework-0.0.1.dev12-py3-none-any.whl
 ```
 
+## Packaging into a container image
+
+### With Docker
+
+```bash
+docker build homework:latest .
+```
+
+### With Buildah or Podman
+
+```bash
+podman build -f Dockerfile.buildah -t homework:0.0.1-1 --format docker .
+buildah bud -f Dockerfile.buildah -t homework:0.0.1-1 --format docker .
+```
+
