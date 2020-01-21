@@ -119,18 +119,30 @@ dist/
 └── homework-0.0.1.dev12-py3-none-any.whl
 ```
 
-## Packaging into a container image
+## Containerization
 
-### With Docker
+### Building an image
+
+With Docker
 
 ```bash
 docker build homework:latest .
 ```
 
-### With Buildah or Podman
+With Buildah or Podman
 
 ```bash
 podman build -f Dockerfile.buildah -t homework:0.0.1-1 --format docker .
 buildah bud -f Dockerfile.buildah -t homework:0.0.1-1 --format docker .
 ```
+
+### Running an image
+
+With Podman:
+
+```bash
+podman run --rm -d -p 8080:8080 homework:0.0.1-1
+```
+
+Test with an ubiquitous HTTP client like mentioned before.
 
