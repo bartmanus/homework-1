@@ -5,13 +5,26 @@ on: [push]
 jobs:
 
   build:
-
     runs-on: ubuntu-latest
-
     steps:
     - uses: actions/checkout@v1
     - name: Build the Docker image
       run: |
+        export image_path_name=docker.pkg.github.com/$GITHUB_REPOSITORY
         export timestamp=$(date +%s)
-        docker build . --file Dockerfile --tag homework:latest
-        docker image tag homework:latest homework:$timestamp
+        docker build . --file Dockerfile --tag $image_path_name:latest
+        docker image tag $image_path_name:latest $image_path_name:$timestamp
+  
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Publish the Docker image
+      run: |
+        export registry_domain=docker.pkg.github.com
+        export image_path_name=$registry_domain/$GITHUB_REPOSITORY
+        export timestamp=$(date +%s)
+        docker image ls
+        docker login -u $GITHUB_ACTOR -p ${{ secrets.GITHUB_TOKEN }} $registry_domain
+        docker push $image_path_name:latest $image_path_name:$timestamp
+        docker logout $registry_domain
+        
