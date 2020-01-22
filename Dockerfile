@@ -25,10 +25,10 @@ USER daemon
 EXPOSE 8080
 
 ENTRYPOINT ["/usr/local/bin/waitress-serve", \
-            "--listen", "0.0.0.0:8080", '
+            "--listen", "0.0.0.0:8080", \
             "--call", "homework:create_app"]
 
-CMD ["--connection-limit", "2000",
+CMD ["--connection-limit", "2000", \
      "--asyncore-use-poll"]
 
 ENV STARTUP_COALESCING_SECONDS=11
