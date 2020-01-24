@@ -1,0 +1,39 @@
+---
+- name: Ensure a GKE cluster for an existing project
+  hosts: localhost
+  gather_facts: no
+
+  vars:
+    gcp_auth_kind: "{{ lookup('env','GCP_AUTH_KIND') }}"
+    gcp_sa_key_file: "{{ lookup('env','GCP_SA_KEY_FILE') }}"
+    gcp_location: "{{ lookup('env','GCP_LOCATION') }}"
+    gcp_project: "{{ lookup('env','GCP_PROJECT') }}"
+    gcp_cluster_name: homework-1-gke-cluster
+
+  tasks:
+  - name: get info on existing clusters
+    gcp_container_cluster_info:
+      location: "{{ gcp_location }}"
+      project: "{{ gcp_project }}"
+      auth_kind: "{{ gcp_auth_kind }}"
+      service_account_file: "{{ gcp_sa_key_file }}"
+    register: gcp_state
+
+  - name: log existing cluster names
+    debug:
+      var: gcp_state.resources|map(attribute="name")|list
+
+  - name: create a cluster
+    gcp_container_cluster:
+      name: "{{ gcp_cluster_name }}"
+      state: present
+      location: "{{ gcp_location }}"
+      project: "{{ gcp_project }}"
+      initial_node_count: 1
+      node_config:
+        machine_type: g1-small
+        disk_size_gb: 10
+      auth_kind: "{{ gcp_auth_kind }}"
+      service_account_file: "{{ gcp_sa_key_file }}"
+    when: gcp_cluster_name not in gcp_state.resources|map(attribute="name")
+
