@@ -18,7 +18,7 @@ ARG DEBIAN_FRONTEND=noninteractive
 RUN set -xe \
  && python3 -m pip install *.whl -r requirements.txt \
  && rm -f *.whl requirements.txt \
- && mkdir -p /app \
+ && mkdir -p /app
 
 USER daemon
 
