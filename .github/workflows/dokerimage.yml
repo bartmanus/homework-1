@@ -6,23 +6,43 @@ jobs:
 
   build:
     runs-on: ubuntu-latest
+    env:
+      image_name: homework
     steps:
     - uses: actions/checkout@v1
     - name: Build the Docker image
       run: |
-        export image_path_name=docker.pkg.github.com/$GITHUB_REPOSITORY/homework
         export branch_slug=$(cut --delimiter / --fields 3- <<< $GITHUB_REF | tr --complement [:alnum:] -)
         export timestamp=$(date +%s)
-        docker build . --file Dockerfile --tag $image_path_name:$branch_slug-latest
-        docker image tag $image_path_name:$branch_slug-latest $image_path_name:$timestamp
-    - name: Publish the Docker image
+        docker build . --file Dockerfile --tag $image_name:latest
+        for extra_tag in $branch_slug-latest $timestamp
+        do
+            docker image tag $image_name:latest $image_name:$extra_tag
+        done
+    - name: Publish the Docker image to GitHub Packages
+      env:
+        registry_domain: docker.pkg.github.com
+        registry_credentials: ${{ secrets.GITHUB_TOKEN }}
       run: |
-        export registry_domain=docker.pkg.github.com
-        export image_path_name=$registry_domain/$GITHUB_REPOSITORY/homework
-        export branch_slug=$(cut --delimiter / --fields 3- <<< $GITHUB_REF | tr --complement [:alnum:] -)
-        export timestamp=$(date +%s)
-        docker login -u $GITHUB_ACTOR -p ${{ secrets.GITHUB_TOKEN }} $registry_domain
-        for image in $(docker image ls --format '{{.Repository}}:{{.Tag}}' $image_path_name); do
-            docker push $image
+        export registry_user=$GITHUB_ACTOR image_path=$registry_domain/$GITHUB_REPOSITORY
+        docker login -u $registry_user --password-stdin $registry_domain <<< $registry_credentials
+        for tag in $(docker image ls --format '{{.Tag}}' $image_name)
+        do
+            docker tag $image_name:$tag $image_path/$image_name:$tag
+            docker push $image_path/$image_name:$tag
+        done
+        docker logout $registry_domain
+    - name: Publish the Docker image to Google Container Registry
+      env:
+        registry_domain: eu.gcr.io
+        registry_user: _json_key
+        registry_credentials: ${{ secrets.GCP_SA_KEY }}
+      run: |
+        export image_path=$registry_domain/${{ secrets.GCP_PROJECT }}
+        docker login -u $registry_user --password-stdin $registry_domain <<< $registry_credentials
+        for tag in $(docker image ls --format '{{.Tag}}' $image_name)
+        do
+            docker tag $image_name:$tag $image_path/$image_name:$tag
+            docker push $image_path/$image_name:$tag
         done
         docker logout $registry_domain
