@@ -11,19 +11,7 @@
     gcp_cluster_name: homework-1-gke-cluster
 
   tasks:
-  - name: get info on existing clusters
-    gcp_container_cluster_info:
-      location: "{{ gcp_location }}"
-      project: "{{ gcp_project }}"
-      auth_kind: "{{ gcp_auth_kind }}"
-      service_account_file: "{{ gcp_sa_key_file }}"
-    register: gcp_state
-
-  - name: log existing cluster names
-    debug:
-      var: gcp_state.resources|map(attribute="name")|list
-
-  - name: create a cluster
+  - name: ensure a GKE cluster
     gcp_container_cluster:
       name: "{{ gcp_cluster_name }}"
       state: present
@@ -35,5 +23,23 @@
         disk_size_gb: 10
       auth_kind: "{{ gcp_auth_kind }}"
       service_account_file: "{{ gcp_sa_key_file }}"
-    when: gcp_cluster_name not in gcp_state.resources|map(attribute="name")
+    register: cluster_state
+
+  - name: ensure a node pool for the cluster
+    gcp_container_node_pool:
+      cluster: "{{ cluster_state }}"
+      name: "{{ gcp_cluster_name ~ '-node-pool' }}"
+      state: present
+      location: "{{ gcp_location }}"
+      project: "{{ gcp_project }}"
+      initial_node_count: 1
+      config:
+        machine_type: g1-small
+        disk_size_gb: 15
+        image_type: cos
+      management:
+        auto_repair: yes
+        auto_upgrade: yes
+      auth_kind: "{{ gcp_auth_kind }}"
+      service_account_file: "{{ gcp_sa_key_file }}"
 
