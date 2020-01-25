@@ -21,6 +21,8 @@
       node_config:
         machine_type: g1-small
         disk_size_gb: 10
+        oauth_scopes:
+        - https://www.googleapis.com/auth/devstorage.read_only
       auth_kind: "{{ gcp_auth_kind }}"
       service_account_file: "{{ gcp_sa_key_file }}"
     register: cluster_state
@@ -35,8 +37,10 @@
       initial_node_count: 1
       config:
         machine_type: g1-small
-        disk_size_gb: 15
+        disk_size_gb: 10
         image_type: cos
+        oauth_scopes:
+        - https://www.googleapis.com/auth/devstorage.read_only
       management:
         auto_repair: yes
         auto_upgrade: yes
