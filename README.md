@@ -123,25 +123,19 @@ dist/
 
 ### Building an image
 
-With Docker
+Use your favourite build tool, e.g.:
 
 ```bash
 docker build homework:latest .
-```
-
-With Buildah or Podman
-
-```bash
-podman build -f Dockerfile.buildah -t homework:0.0.1-1 --format docker .
-buildah bud -f Dockerfile.buildah -t homework:0.0.1-1 --format docker .
+podman build -t homework:latest --format docker .
+buildah bud -t homework:latest --format docker .
 ```
 
 ### Running an image
 
-With Podman:
-
 ```bash
-podman run --rm -d -p 8080:8080 homework:0.0.1-1
+docker run --rm -d -p 8080:8080 homework:latest
+podman run --rm -d -p 8080:8080 homework:latest
 ```
 
 Test with an ubiquitous HTTP client like mentioned before.
