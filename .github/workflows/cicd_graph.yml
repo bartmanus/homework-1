@@ -88,7 +88,7 @@ jobs:
         yes | gcloud components install kubectl
     - name: Setup credentials
       run: |
-        echo -e $gcp_credentials > gcp_sa_key.json
+        echo $gcp_credentials > gcp_sa_key.json
         gcloud auth activate-service-account --key-file=gcp_sa_key.json 
         gcloud container clusters get-credentials ${gke_cluster} --project=${gcp_project} --zone=${gcp_zone}
     - name: Apply k8s declarative configuration
