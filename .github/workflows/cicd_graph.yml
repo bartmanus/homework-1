@@ -93,5 +93,5 @@ jobs:
         gcloud container clusters get-credentials ${gke_cluster} --project=${gcp_project} --zone=${gcp_zone}
     - name: Apply k8s declarative configuration
       run: |
-        cat provision/deployment.yaml provision/service.yaml | kubectl apply -f-
+        cat deploy/deployment.yaml deploy/service.yaml | kubectl apply -f-
 
