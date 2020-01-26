@@ -4,6 +4,7 @@ on: [push]
 
 jobs:
   test_functional:
+    name: Execute tests and code coverage report
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v1
@@ -20,6 +21,7 @@ jobs:
     - name: Report code test coverage
       run: pipenv run coverage report
   build_container_images:
+    name: Build container images and push them to GHP, GCR
     needs: test_functional
     runs-on: ubuntu-latest
     env:
@@ -62,4 +64,36 @@ jobs:
             docker push $image_path/$image_name:$tag
         done
         docker logout $registry_domain
+  deploy_to_gke:
+    name: Deploy to GKE idempotently
+    needs: build-container-images
+    runs-on: ubuntu-latest
+    env:
+      registry_domain: eu.gcr.io
+      registry_user: _json_key
+      gcp_credentials: ${{ secrets.GCP_SA_KEY }}
+      gcp_project: ${{ secrets.GCP_PROJECT }}
+      gcp_zone: europe-west3-c
+      gke_cluster: homework-1-gke-cluster
+      sdk_url: https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-sdk-277.0.0-linux-x86_64.tar.gz
+      sdk_sha256sum: b158894c427712d006fac235daf8d288db110ecfbcf649ed11cdf36ac2b2ff2a
+    steps:
+    - uses: actions/checkout@v1
+    - name: Install gcloud and kubectl tools
+      run: |
+        curl ${sdk_url} -o sdk.tar.gz
+        test $(sha256sum sdk.tar.gz | cut -d\  -f1) == ${sdk_sha256sum}
+        tar xzf sdk.tar.gz
+        yes | bash google-cloud-sdk/install.sh
+        source google-cloud-sdk/path.bash.inc
+        yes | gcloud components update
+        yes | gcloud components install kubectl
+    - name: Setup credentials
+      run: |
+        echo -e $gcp_credentials > gcp_sa_key.json
+        gcloud auth activate-service-account --key-file=gcp_sa_key.json 
+        gcloud container clusters get-credentials ${gke_cluster} --project=${gcp_project} --zone=${gcp_zone}
+    - name: Apply k8s declarative configuration
+      run: |
+        cat provision/deployment.yaml provision/service.yaml | kubectl apply -f-
 
