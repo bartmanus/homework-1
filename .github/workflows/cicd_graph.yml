@@ -22,6 +22,7 @@ jobs:
       run: pipenv run coverage report
   build_container_images:
     name: Build container images and push them to GHP, GCR
+    if: github.ref == 'master' && contains(toJson(github.event.commits), '[skip cd]') == false
     needs: test_functional
     runs-on: ubuntu-latest
     env:
@@ -66,6 +67,7 @@ jobs:
         docker logout $registry_domain
   deploy_to_gke:
     name: Deploy to GKE idempotently
+    if: github.ref == 'master' && contains(toJson(github.event.commits), '[skip cd]') == false
     needs: build_container_images
     runs-on: ubuntu-latest
     env:
